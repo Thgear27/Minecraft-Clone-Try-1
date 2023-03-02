@@ -40,6 +40,8 @@ int main() {
         return -1;
     }
 
+    std::cout << "Size of glm::vec3: " << sizeof(glm::vec<3, char>) << '\n';
+
     try {
         game();
     } catch (std::exception const& e) {
@@ -129,8 +131,6 @@ void CreateVertexSpecification(VertexArray& vao, VertexBuffer& vbo, ElementBuffe
         1, 2, 3  // second triangle
     };
 
-    stbi_set_flip_vertically_on_load(true);
-
     texture2d.loadImageData("resources/img/textures.png", 0, GL_RGBA, GL_RGBA);
 
     texture2d.setTextureUnit(0);
@@ -140,7 +140,9 @@ void CreateVertexSpecification(VertexArray& vao, VertexBuffer& vbo, ElementBuffe
     vbo.loadData(sizeof(vertices), vertices, GL_STATIC_DRAW);
     vbo.push_VertexAttribLayout(GL_FLOAT, GL_FALSE, 3);
     vbo.push_VertexAttribLayout(GL_FLOAT, GL_FALSE, 2);
+
     ebo.loadData(sizeof(indices), indices, GL_STATIC_DRAW);
+
     vao.addVertexBuffer(&vbo);
     vao.addElementBuffer(&ebo);
     vao.linkBuffers();
@@ -253,8 +255,8 @@ bool IsGameRunning(Window& window, VertexArray& vao, Camera& camera) {
     for (int i = 0; i < 10; i++) {
         glm::mat4 model = glm::mat4 { 1.0f };
         model           = glm::translate(model, cubePositions[i]);
-        // model           = glm::rotate(model, n * ((i + 1) / 8.0f), glm::vec3 { 1.0f, 0.3f, 0.5f });
-        // float angle     = i * 20.0f;
+
+
 
         shaderProgram1.setMat4("model", model);
         Draw(vao, 36);

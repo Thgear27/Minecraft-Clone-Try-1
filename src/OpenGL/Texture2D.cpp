@@ -4,6 +4,7 @@
 
 Texture2D::Texture2D(const std::string& fileName, int desiredChannels, GLint internalFormat, GLenum format) {
     loadImageData(fileName, desiredChannels, internalFormat, format);
+    stbi_set_flip_vertically_on_load(true);
 }
 
 Texture2D::Texture2D() {
@@ -35,6 +36,7 @@ void Texture2D::setTextureUnit(int texUnit) {
 }
 
 void Texture2D::loadImageData(const std::string& fileName, int desiredChannels, GLint internalFormat, GLenum format) {
+
     unsigned char* imgData = stbi_load(fileName.c_str(), &width, &height, &nrChanels, desiredChannels);
     std::string errorMessage = "Can not load image: ";
     errorMessage.append(fileName);
