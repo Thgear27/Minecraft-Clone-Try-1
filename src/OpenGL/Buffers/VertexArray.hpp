@@ -25,6 +25,8 @@ public:
 
     VertexBuffer* m_vbo = nullptr;
     ElementBuffer* m_ebo = nullptr;
+
+    bool m_isEBOused = false;
 };
 
 #endif // VERTEX_ARRAY_HPP
