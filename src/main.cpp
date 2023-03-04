@@ -12,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "CubeRenderer.hpp"
 #include <iostream>
 #include <stdexcept>
 
@@ -31,7 +32,7 @@ void CreateVertexSpecification(VertexArray& vao, VertexBuffer& vbo, ElementBuffe
 void CleanUp();
 void PreDraw();
 void Draw(VertexArray& vao_obj, int size);
-bool IsGameRunning(Window& window, VertexArray& vao, Camera& camera);
+bool IsGameRunning(Window& window, CubeRenderer& cubeRenderer, Camera& camera);
 void game();
 
 int main() {
@@ -66,87 +67,18 @@ void game() {
     shaderProgram1.loadSource("resources/vertex.vert", ShaderProgram::VERTEX);
     shaderProgram1.createShaderProgram();
 
-    VertexBuffer vbo;
-    ElementBuffer ebo;
-    VertexArray vao;
+    CubeRenderer cubeRenderer(shaderProgram1);
 
     Camera camera;
 
-    CreateVertexSpecification(vao, vbo, ebo);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 
+    GLCall(glViewport(0, 0, width, height));
     GLCall(glEnable(GL_DEPTH_TEST));
-    while (IsGameRunning(myWindow, vao, camera))
+    while (IsGameRunning(myWindow, cubeRenderer, camera))
         ;
 
     CleanUp();
-}
-
-void CreateVertexSpecification(VertexArray& vao, VertexBuffer& vbo, ElementBuffer& ebo) {
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
-        0.5f,  -0.5f, -0.5f, 1.0f, 0.0f, //
-        0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, //
-        0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, //
-        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, //
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, //
-
-        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, //
-        0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, //
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, //
-        0.5f,  0.5f,  0.5f,  1.0f, 1.0f, //
-        -0.5f, 0.5f,  0.5f,  0.0f, 1.0f, //
-        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, //
-
-        -0.5f, 0.5f,  0.5f,  1.0f, 0.0f, //
-        -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, //
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
-        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, //
-        -0.5f, 0.5f,  0.5f,  1.0f, 0.0f, //
-
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, //
-        0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, //
-        0.5f,  -0.5f, -0.5f, 0.0f, 1.0f, //
-        0.5f,  -0.5f, -0.5f, 0.0f, 1.0f, //
-        0.5f,  -0.5f, 0.5f,  0.0f, 0.0f, //
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, //
-
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
-        0.5f,  -0.5f, -0.5f, 1.0f, 1.0f, //
-        0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, //
-        0.5f,  -0.5f, 0.5f,  1.0f, 0.0f, //
-        -0.5f, -0.5f, 0.5f,  0.0f, 0.0f, //
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f, //
-
-        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f, //
-        0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, //
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, //
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f, //
-        -0.5f, 0.5f,  0.5f,  0.0f, 0.0f, //
-        -0.5f, 0.5f,  -0.5f, 0.0f, 1.0f  //
-    };
-
-    uint indices[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-
-    texture2d.loadImageData("resources/img/textures.png", 0, GL_RGBA, GL_RGBA);
-
-    texture2d.setTextureUnit(0);
-
-    SDL_SetRelativeMouseMode(SDL_TRUE);
-
-    vbo.loadData(sizeof(vertices), vertices, GL_STATIC_DRAW);
-    vbo.push_VertexAttribLayout(GL_FLOAT, GL_FALSE, 3);
-    vbo.push_VertexAttribLayout(GL_FLOAT, GL_FALSE, 2);
-
-    ebo.loadData(sizeof(indices), indices, GL_STATIC_DRAW);
-
-    vao.addVertexBuffer(&vbo);
-    vao.addElementBuffer(&ebo);
-    vao.linkBuffers();
-    GLCall(glViewport(0, 0, width, height));
 }
 
 void LoadGLFunctions() {
@@ -165,8 +97,8 @@ void PrintRenderInformation() {
 void CleanUp() {}
 
 void PreDraw() {
-    // GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
-    GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+    GLCall(glClearColor(0.2f, 0.3f, 0.3f, 1.0f));
+    // GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
     GLCall(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 }
 
@@ -204,7 +136,7 @@ void handleInput(Camera& camera) {
     if (keyState[SDL_SCANCODE_E] == 1) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-bool IsGameRunning(Window& window, VertexArray& vao, Camera& camera) {
+bool IsGameRunning(Window& window, CubeRenderer& cubeRenderer, Camera& camera) {
 
     static float lastFrame    = 0.0f;
     static float currentFrame = SDL_GetTicks64();
@@ -230,10 +162,6 @@ bool IsGameRunning(Window& window, VertexArray& vao, Camera& camera) {
     glm::mat projection = glm::mat4 { 1.0f };
     projection          = glm::perspective(glm::radians(80.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    // // glm::mat view  = glm::lookAt(glm::vec3 { 0, -1.0f, 0 }, glm::vec3 { 0, 0, 0 }, glm::vec3 { 0, 1.0f, 0 });
-    // glm::mat4 view = glm::mat4 { 1.0f };
-    // view           = glm::translate(view, glm::vec3 { 0, 0, -10 });
-
     glm::vec3 cubePositions[] = { glm::vec3(0.0f, 0.0f, 0.0f),
                                   glm::vec3(1, 0, 0),
                                   glm::vec3(0, 0, 1),
@@ -251,22 +179,12 @@ bool IsGameRunning(Window& window, VertexArray& vao, Camera& camera) {
     shaderProgram1.setMat4("view", camera.getViewMatrix());
     shaderProgram1.setMat4("projection", projection);
 
+    // Handles the rendering
     PreDraw();
     for (int i = 0; i < 10; i++) {
-        glm::mat4 model = glm::mat4 { 1.0f };
-        model           = glm::translate(model, cubePositions[i]);
-
-
-
-        shaderProgram1.setMat4("model", model);
-        Draw(vao, 36);
+        cubeRenderer.render(cubePositions[i]);
     }
 
     window.SwapWindow();
     return true;
 }
-
-// TODO:
-/***
- * Add a camera system
- */
