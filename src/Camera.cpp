@@ -1,8 +1,6 @@
 #include "Camera.hpp"
 #include <iostream>
 
-extern float deltaTime;
-
 Camera::Camera(const glm::vec3& position) {
     m_position = position;
     m_target   = glm::vec3 { 0.0f, 0.0f, 0.0f };
@@ -27,7 +25,7 @@ void Camera::updateCoordinateSystem() {
     m_upAxis    = glm::normalize(glm::cross(m_direction, m_rightAxis));
 }
 
-void Camera::translate(Direction direction) {
+void Camera::translate(Direction direction, float deltaTime) {
     glm::vec3 newFront = glm::normalize(glm::vec3 { m_direction.x, 0.0f, m_direction.z });
     if (direction == Direction::FRONT) m_position += (newFront * m_movementSpeed * deltaTime);
     if (direction == Direction::BACK) m_position -= (newFront * m_movementSpeed * deltaTime);

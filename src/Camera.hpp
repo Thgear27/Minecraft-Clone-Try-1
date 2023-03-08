@@ -35,7 +35,7 @@ public:
 
     ~Camera();
     void updateCoordinateSystem();
-    void translate(Direction direction);
+    void translate(Direction direction, float deltaTime);
     void processMouseOffsets(float xoffset, float yoffset);
     void setSensitivity(float newSensitivity);
     void setMovementSpeed(float newSpeed);
